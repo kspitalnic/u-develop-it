@@ -18,6 +18,31 @@ const db = mysql.createConnection(
     console.log('Connected to the my report study database')
 )
 
+// db.query(`SELECT * FROM participants`, (err, rows) => {
+//     console.log(rows);
+// });
+
+// Delete a candidate
+// db.query(`DELETE FROM participants WHERE id = ?`, 1, (err, result) => {
+//     if (err) {
+//       console.log(err);
+//     }
+//     console.log(result);
+//   });
+
+// Create a candidate
+const sql = `INSERT INTO participants (code, participant, date, time) 
+              VALUES (?,?,?,?)`;
+const params = ['K00106', 'K001', '1/5/2021', 'S1'];
+
+db.query(sql, params, (err, result) => {
+  if (err) {
+    console.log(err);
+  }
+  console.log(result);
+});
+
+
 app.get('/', (req, res) => {
     res.json({
         message:'Hello World'
