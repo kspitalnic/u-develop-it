@@ -18,17 +18,60 @@ const db = mysql.createConnection(
     console.log('Connected to the my report study database')
 )
 
-// db.query(`SELECT * FROM participants`, (err, rows) => {
-//     console.log(rows);
-// });
+// Get all participants
+app.get('/api/participants', (req, res) => {
+    const sql = `SELECT * FROM participants`;
+  
+    db.query(sql, (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({
+        message: 'success',
+        data: rows
+      });
+    });
+  });
+
+  // Get a single participant
+app.get('/api/participant/:id', (req, res) => {
+    const sql = `SELECT * FROM participants WHERE id = ?`;
+    const params = [req.params.id];
+  
+    db.query(sql, params, (err, row) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({
+        message: 'success',
+        data: row
+      });
+    });
+  });
 
 // Delete a candidate
-// db.query(`DELETE FROM participants WHERE id = ?`, 1, (err, result) => {
-//     if (err) {
-//       console.log(err);
-//     }
-//     console.log(result);
-//   });
+app.delete('/api/participant/:id', (req, res) => {
+    const sql = `DELETE FROM participants WHERE id = ?`;
+    const params = [req.params.id];
+  
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        res.statusMessage(400).json({ error: res.message });
+      } else if (!result.affectedRows) {
+        res.json({
+          message: 'Participant not found'
+        });
+      } else {
+        res.json({
+          message: 'deleted',
+          changes: result.affectedRows,
+          id: req.params.id
+        });
+      }
+    });
+  });
 
 // Create a candidate
 const sql = `INSERT INTO participants (code, participant, date, time) 
