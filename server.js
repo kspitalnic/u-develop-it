@@ -2,6 +2,7 @@ const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
 const mysql = require('mysql2');
+const inputCheck = require('./utils/inputCheck');
 
 // Express middleware 
 app.use(express.urlencoded({ extended: false}));
@@ -72,6 +73,30 @@ app.delete('/api/participant/:id', (req, res) => {
       }
     });
   });
+
+  // Create a participant
+app.post('/api/participant', ({ body }, res) => {
+    const errors = inputCheck(body, 'code', 'particpant', 'date', 'time');
+    if (errors) {
+      res.status(400).json({ error: errors });
+      return;
+    }
+    const sql = `INSERT INTO participants (code, participant, date, time)
+  VALUES (?,?,?,?)`;
+const params = [body.code, body.participant, body.date, body.time];
+
+db.query(sql, params, (err, result) => {
+  if (err) {
+    res.status(400).json({ error: err.message });
+    return;
+  }
+  res.json({
+    message: 'success',
+    data: body
+  });
+  });
+});
+
 
 // Create a candidate
 const sql = `INSERT INTO participants (code, participant, date, time) 
